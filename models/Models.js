@@ -13,14 +13,14 @@ const Collection = sequelize.define('collection', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING },
     description: { type: DataTypes.STRING },
-    tag: { type: DataTypes.STRING },
+    tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
     theme: { type: DataTypes.STRING },
 })
 
 const Item = sequelize.define('item', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING },
-    likes: { type: DataTypes.INTEGER },
+    likes: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 
 const Comment = sequelize.define('comment', {
@@ -30,8 +30,12 @@ const Comment = sequelize.define('comment', {
 })
 
 User.hasMany(Collection)
-Collection.hasOne(User)
+Collection.belongsTo(User)
+
 Collection.hasMany(Item)
+Item.belongsTo(Collection)
+
 Item.hasMany(Comment)
+Comment.belongsTo(Item)
 
 module.exports = { User, Collection, Item, Comment }
