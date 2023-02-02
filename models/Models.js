@@ -20,6 +20,7 @@ const Collection = sequelize.define('collection', {
 const Item = sequelize.define('item', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING },
+    tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
     likes: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 

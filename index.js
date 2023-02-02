@@ -4,6 +4,7 @@ const express = require('express')
 const sequelize = require('./config/db')
 const routerAuth = require('./routes/auth')
 const routerCollection = require('./routes/collections')
+const routerItem = require('./routes/item')
 
 const app = express();
 const PORT = process.env.PORT || 8080
@@ -13,6 +14,7 @@ app.use(cors())
 
 app.use('/auth', routerAuth)
 app.use('/collection', routerCollection)
+app.use('/item', routerItem)
 
 const start = async () => {
     try {
