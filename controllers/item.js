@@ -41,20 +41,22 @@ class ItemController {
     }
 
     async addLike(req, res) {
-        const { id } = req.body
+        const { id, collectionId } = req.body
         try {
-            const item = await Item.increment({ likes: 1 }, { where: { id: id } })
-            return res.status(200).json({ successful: true, data: item })
+            await Item.increment({ likes: 1 }, { where: { id: id } })
+            const items = await Item.findAll({ where: { collectionId: collectionId } })
+            return res.status(200).json({ successful: true, data: items })
         } catch (error) {
             res.status(500).json(error)
         }
     }
 
     async removeLike(req, res) {
-        const { id } = req.body
+        const { id, collectionId } = req.body
         try {
-            const item = await Item.decrement({ likes: 1 }, { where: { id: id } })
-            return res.status(200).json({ successful: true, data: item })
+            await Item.decrement({ likes: 1 }, { where: { id: id } })
+            const items = await Item.findAll({ where: { collectionId: collectionId } })
+            return res.status(200).json({ successful: true, data: items })
         } catch (error) {
             res.status(500).json(error)
         }
