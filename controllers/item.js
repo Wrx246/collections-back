@@ -41,10 +41,11 @@ class ItemController {
     }
 
     async addLike(req, res) {
-        const { id, collectionId } = req.body
+        const { id } = req.body
         try {
             await Item.increment({ likes: 1 }, { where: { id: id } })
-            const items = await Item.findAll({ where: { collectionId: collectionId } })
+            const item = await Item.findOne({ where: { id: id } })
+            const items = await Item.findAll({ where: { collectionId: item.collectionId } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
             res.status(500).json(error)
@@ -52,10 +53,11 @@ class ItemController {
     }
 
     async removeLike(req, res) {
-        const { id, collectionId } = req.body
+        const { id } = req.body
         try {
             await Item.decrement({ likes: 1 }, { where: { id: id } })
-            const items = await Item.findAll({ where: { collectionId: collectionId } })
+            const item = await Item.findOne({ where: { id: id } })
+            const items = await Item.findAll({ where: { collectionId: item.collectionId } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
             res.status(500).json(error)
