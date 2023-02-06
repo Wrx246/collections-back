@@ -6,28 +6,28 @@ const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
-    name: { type: DataTypes.STRING, unique: true },
+    name: { type: DataTypes.CHAR, unique: true },
 })
 
 const Collection = sequelize.define('collection', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING },
+    title: { type: DataTypes.CHAR },
     description: { type: DataTypes.STRING },
-    tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
-    theme: { type: DataTypes.STRING },
+    tags: { type: DataTypes.ARRAY(DataTypes.CHAR) },
+    theme: { type: DataTypes.CHAR },
 })
 
 const Item = sequelize.define('item', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING },
-    tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
+    title: { type: DataTypes.CHAR },
+    tags: { type: DataTypes.ARRAY(DataTypes.CHAR) },
     likes: { type: DataTypes.INTEGER, defaultValue: 0 },
 })
 
 const Comment = sequelize.define('comment', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     text: { type: DataTypes.STRING },
-    author: { type: DataTypes.STRING },
+    author: { type: DataTypes.CHAR },
 })
 
 User.hasMany(Collection)

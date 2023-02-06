@@ -10,8 +10,8 @@ class CollectionController {
             await Collection.create({ title, description, tags, theme, userId })
             const collection = await Collection.findOne({ where: { title: title } })
             return res.status(200).json({ successful: true, message: `Collection ${title} created.`, data: collection })
-        } catch (e) {
-            res.status(500).json(e)
+        } catch (error) {
+            res.status(500).json(error)
         }
     }
 
@@ -24,7 +24,7 @@ class CollectionController {
             const collections = await Collection.findAll({ where: { userId: id } })
             return res.status(200).json({ successful: true, data: collections })
         } catch (error) {
-            res.status(500).json(e)
+            res.status(500).json(error)
         }
     }
 }

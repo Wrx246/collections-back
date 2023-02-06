@@ -10,8 +10,8 @@ class ItemController {
             await Item.create({ title, tags, collectionId })
             const item = await Item.findOne({ where: { title: title, collectionId: collectionId } })
             return res.status(200).json({ successful: true, message: `Item ${title} created.`, data: item })
-        } catch (e) {
-            res.status(500).json(e)
+        } catch (error) {
+            res.status(500).json(error)
         }
     }
 
@@ -24,7 +24,39 @@ class ItemController {
             const items = await Item.findAll({ where: { collectionId: id } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            res.status(500).json(e)
+            res.status(500).json(error)
+        }
+    }
+
+    async getLatestItems(req, res) {
+        try {
+            const items = await Item.findAll({
+                limit: 10,
+                order: [['createdAt', 'DESC']]
+            })
+            return res.status(200).json({ successful: true, data: items })
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+
+    async addLike(req, res) {
+        const { id } = req.body
+        try {
+            const item = await Item.increment({ likes: 1 }, { where: { id: id } })
+            return res.status(200).json({ successful: true, data: item })
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+
+    async removeLike(req, res) {
+        const { id } = req.body
+        try {
+            const item = await Item.decrement({ likes: 1 }, { where: { id: id } })
+            return res.status(200).json({ successful: true, data: item })
+        } catch (error) {
+            res.status(500).json(error)
         }
     }
 }
