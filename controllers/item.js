@@ -4,14 +4,14 @@ class ItemController {
     async createItem(req, res) {
         const { title, tags, collectionId } = req.body;
         try {
-            if (!title && !tags) {
+            if (!title && !tags && !collectionId) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
             }
             await Item.create({ title, tags, collectionId })
             const item = await Item.findOne({ where: { title: title, collectionId: collectionId } })
             return res.status(200).json({ successful: true, message: `Item ${title} created.`, data: item })
         } catch (error) {
-            res.status(500).json(error)
+            return res.status(500).json(error)
         }
     }
 
@@ -24,7 +24,23 @@ class ItemController {
             const items = await Item.findAll({ where: { collectionId: id } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            res.status(500).json(error)
+            return res.status(500).json(error)
+        }
+    }
+
+    async getItem(req, res) {
+        const { id } = req.params;
+        try {
+            if (!id) {
+                return res.status(400).json({ successful: false, message: `Incorrect user ID. Please try again.` })
+            }
+            const item = await Item.findOne({ where: { id: id } })
+            if(!item) {
+                return res.status(500).json({ successful: false, message: `Item doesn't exist`})
+            }
+            return res.status(200).json({ successful: true, data: item })
+        } catch (error) {
+            return res.status(500).json(error)
         }
     }
 
@@ -36,31 +52,40 @@ class ItemController {
             })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            res.status(500).json(error)
+            return res.status(500).json(error)
         }
     }
 
     async addLike(req, res) {
-        const { id } = req.body
+        const { id, userId } = req.body
         try {
-            await Item.increment({ likes: 1 }, { where: { id: id } })
+            if(!userId) {
+                return res.status(400).json({ message: `User doesn't exist.` })
+            }
             const item = await Item.findOne({ where: { id: id } })
-            const items = await Item.findAll({ where: { collectionId: item.collectionId } })
+            if (!item) {
+                return res.status(400).json({ message: `Item doesn't exist.` })
+            }
+            const items = await Item.update({ likes: [...likes, userId] }, { where: { id: id } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            res.status(500).json(error)
+            return res.status(500).json(error)
         }
     }
 
     async removeLike(req, res) {
-        const { id } = req.body
+        const { id, userId } = req.body
         try {
-            await Item.decrement({ likes: 1 }, { where: { id: id } })
-            const item = await Item.findOne({ where: { id: id } })
-            const items = await Item.findAll({ where: { collectionId: item.collectionId } })
-            return res.status(200).json({ successful: true, data: items })
+            if(!userId) {
+                return res.status(400).json({ message: `User doesn't exist.` })
+            }
+            const item = await Item.update({ likes: [...likes, userId] }, { where: { id: id } })
+            // await Item.decrement({ likes: 1 }, { where: { id: id } })
+            // const item = await Item.findOne({ where: { id: id } })
+            // const items = await Item.findAll({ where: { collectionId: item.collectionId } })
+            return res.status(200).json({ successful: true, data: item })
         } catch (error) {
-            res.status(500).json(error)
+            return res.status(500).json(error)
         }
     }
 }
