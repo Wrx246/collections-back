@@ -1,4 +1,4 @@
-const { Item } = require('../models/Models')
+const { Item, Comment } = require('../models/Models')
 
 class ItemController {
     async createItem(req, res) {
@@ -28,6 +28,21 @@ class ItemController {
         }
     }
 
+    async deleteItem(req, res) {
+        const { id, collectionId } = req.body
+        try {
+            if (!id && !collectionId) {
+                return res.status(400).json({ message: `Incorrect item ID. Please try again.` })
+            }
+            await Item.destroy({ where: { id: id } })
+            await Comment.destroy({ where: { itemId: null } })
+            const items = await Item.findAll({ where: { collectionId: collectionId } })
+            return res.status(200).json({ successful: true, data: items })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
     async getItem(req, res) {
         const { id } = req.params;
         try {
@@ -35,8 +50,8 @@ class ItemController {
                 return res.status(400).json({ successful: false, message: `Incorrect user ID. Please try again.` })
             }
             const item = await Item.findOne({ where: { id: id } })
-            if(!item) {
-                return res.status(500).json({ successful: false, message: `Item doesn't exist`})
+            if (!item) {
+                return res.status(500).json({ successful: false, message: `Item doesn't exist` })
             }
             return res.status(200).json({ successful: true, data: item })
         } catch (error) {
@@ -59,7 +74,7 @@ class ItemController {
     async addLike(req, res) {
         const { id, userId } = req.body
         try {
-            if(!userId) {
+            if (!userId) {
                 return res.status(400).json({ message: `User doesn't exist.` })
             }
             const item = await Item.findOne({ where: { id: id } })
@@ -76,7 +91,7 @@ class ItemController {
     async removeLike(req, res) {
         const { id, userId } = req.body
         try {
-            if(!userId) {
+            if (!userId) {
                 return res.status(400).json({ message: `User doesn't exist.` })
             }
             const item = await Item.update({ likes: [...likes, userId] }, { where: { id: id } })
