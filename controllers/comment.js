@@ -22,7 +22,7 @@ class CommentController {
             }
             const comments = await Comment.findAll({ where: { itemId: itemId } })
             if (!comments) {
-                return res.status(500).json({ successful: true, message: `This item has no messages` })
+                return res.status(500).json({ successful: true, message: `This item has no comments` })
             }
             return res.status(200).json({ successful: true, comments: comments })
         } catch (error) {

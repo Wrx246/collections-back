@@ -4,7 +4,7 @@ const collectionController = require('../controllers/collections')
 
 routerCollection.post('/create', collectionController.createCollection)
 routerCollection.get('/:id', collectionController.getCollections)
-routerCollection.get('/popular', collectionController.getPopularCollections)
+routerCollection.get('/mane/popular', collectionController.getPopular)
 routerCollection.delete('/delete', collectionController.deleteCollection)
 
 module.exports = routerCollection

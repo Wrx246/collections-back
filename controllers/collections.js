@@ -1,4 +1,6 @@
 const { Collection, Item, Comment } = require('../models/Models')
+const sequelize = require('../config/db')
+// const { Op } = require('sequelize')
 
 class CollectionController {
     async createCollection(req, res) {
@@ -28,9 +30,13 @@ class CollectionController {
         }
     }
 
-    async getPopularCollections(req, res) {
+    async getPopular(req, res) {
         try {
-            
+            const comments = await Comment.findAndCountAll({ limit: 10, include: Item })
+            if (!comments) {
+                return res.status(500).json({ message: 'Comments didn`t find' })
+            }
+            return res.status(200).json({ successful: true, comments })
         } catch (error) {
             return res.status(500).json(error)
         }
