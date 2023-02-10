@@ -1,4 +1,6 @@
-const { Item, Comment, User } = require('../models/Models')
+const { Item, Comment, User, Collection } = require('../models/Models')
+const sequelize = require('../config/db')
+const { Op } = require('sequelize')
 
 class ItemController {
     async createItem(req, res) {
@@ -85,10 +87,10 @@ class ItemController {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
             const n = await item.likes.includes(userId)
-            if(n) {
-                return res.status(500).json({ message: `Already liked`})
+            if (n) {
+                return res.status(500).json({ message: `Already liked` })
             }
-            await item.update({ likes: [...item.likes, userId] }, {where: { id: id }})
+            await item.update({ likes: [...item.likes, userId] }, { where: { id: id } })
             return res.status(200).json({ successful: true, data: item })
         } catch (error) {
             return res.status(500).json(error)
@@ -109,11 +111,21 @@ class ItemController {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
             const n = await item.likes.includes(userId)
-            if(!n) {
-                return res.status(500).json({ message: `User doesn't liked this item`})
+            if (!n) {
+                return res.status(500).json({ message: `User doesn't liked this item` })
             }
-            await item.update({ likes: item.likes.filter(i => i !== userId) }, {where: { id: id }})
+            await item.update({ likes: item.likes.filter(i => i !== userId) }, { where: { id: id } })
             return res.status(200).json({ successful: true, data: item })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
+    async searchItem(req, res) {
+        const { search } = req.query
+        try {
+            const items = await Item.findAll({ where: { title: { [Op.iLike]: '%' + search + '%' } } })
+            return res.status(200).json({ successful: true, items })
         } catch (error) {
             return res.status(500).json(error)
         }

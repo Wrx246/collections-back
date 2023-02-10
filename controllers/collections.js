@@ -1,6 +1,4 @@
 const { Collection, Item, Comment } = require('../models/Models')
-const sequelize = require('../config/db')
-// const { Op } = require('sequelize')
 
 class CollectionController {
     async createCollection(req, res) {
