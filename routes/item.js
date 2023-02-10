@@ -3,6 +3,7 @@ const routerItem = new Router()
 const itemController = require('../controllers/item')
 
 routerItem.post('/create', itemController.createItem)
+routerItem.put('/edit', itemController.editItem)
 routerItem.get('/collection/:id', itemController.getItems)
 routerItem.get('/collection/item/:id', itemController.getItem)
 routerItem.get('/latest', itemController.getLatestItems)
