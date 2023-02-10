@@ -15,6 +15,34 @@ class CollectionController {
         }
     }
 
+    async editCollection(req, res) {
+        const { title, description, theme, tags, id } = req.body;
+        const options = {
+            title: title,
+            description: description,
+            theme: theme,
+            tags: tags
+        }
+        try {
+            if (!title && !id && !description && !theme && !tags) {
+                return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
+            }
+            const collection = await Collection.findOne({ where: { id: id } })
+            const items = await Item.findAll({ where: { collectionId: id } })
+            if (!collection) {
+                return res.status(400).json({ message: `Collection doesn't exist.` })
+            }
+            if (!items) {
+                return res.status(400).json({ message: `Items doesn't exist` })
+            }
+            await collection.update(options, { where: { id: id } })
+            items.map(item => item.update({ tags: tags }))
+            res.status(200).json({ successful: true, collection })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
     async getCollections(req, res) {
         const { id } = req.params;
         try {

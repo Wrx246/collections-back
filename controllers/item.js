@@ -17,6 +17,23 @@ class ItemController {
         }
     }
 
+    async editItem(req, res) {
+        const { title, id } = req.body;
+        try {
+            if (!title && !id) {
+                return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
+            }
+            const item = await Item.findOne({ where: { id: id } })
+            if (!item) {
+                return res.status(400).json({ message: `Item doesn't exist.` })
+            }
+            await item.update({ title: title }, { where: { id: id } })
+            res.status(200).json({ successful: true, item})
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
     async getItems(req, res) {
         const { id } = req.params;
         try {
