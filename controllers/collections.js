@@ -58,10 +58,13 @@ class CollectionController {
 
     async getPopular(req, res) {
         try {
-            const comments = await Comment.findAndCountAll({ limit: 10, include: Item })
+            const comments = await Item.findAll({ limit: 10, include: Comment })
             if (!comments) {
                 return res.status(500).json({ message: 'Comments didn`t find' })
             }
+            comments.map(async c => {
+                await Collection.findAll({where: { id: c.collectionId}})
+            })
             return res.status(200).json({ successful: true, comments })
         } catch (error) {
             return res.status(500).json(error)

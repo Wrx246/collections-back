@@ -4,12 +4,12 @@ const { Op } = require('sequelize')
 
 class ItemController {
     async createItem(req, res) {
-        const { title, tags, collectionId } = req.body;
+        const { title, description, author, date, tags, collectionId } = req.body;
         try {
             if (!title && !tags && !collectionId) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
             }
-            await Item.create({ title, tags, collectionId })
+            await Item.create({ title, description, author, date, tags, collectionId })
             const item = await Item.findOne({ where: { title: title, collectionId: collectionId } })
             return res.status(200).json({ successful: true, message: `Item ${title} created.`, data: item })
         } catch (error) {
