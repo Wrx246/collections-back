@@ -61,7 +61,7 @@ class CollectionController {
             const items = await Item.findAll()
             const comments = await Comment.findAll({ where: { itemId: items.map(i => i.id) } })
             const it = await Item.findAll({ where: { id: comments.map(c => c.itemId) } })
-            const collections = await Collection.findAll({ where: { id: it.map(i => i.collectionId) } })
+            const collections = await Collection.findAll({ limit: 10, where: { id: it.map(i => i.collectionId) } })
             if (!collections) {
                 return res.status(500).json({ message: 'Collections not find' })
             }
