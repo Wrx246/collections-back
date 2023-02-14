@@ -98,9 +98,7 @@ class ItemController {
             }
             const user = await User.findOne({ where: { id: userId } })
             const item = await Item.findOne({ where: { id: id } })
-            if (!user) {
-                return res.status(400).json({ message: `User doesn't exist.` })
-            } else if (!item) {
+            if (!user && !item) {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
             const n = await item.likes.includes(userId)
@@ -122,9 +120,7 @@ class ItemController {
             }
             const user = await User.findOne({ where: { id: userId } })
             const item = await Item.findOne({ where: { id: id } })
-            if (!user) {
-                return res.status(400).json({ message: `User doesn't exist.` })
-            } else if (!item) {
+            if (!user && !item) {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
             const n = await item.likes.includes(userId)
