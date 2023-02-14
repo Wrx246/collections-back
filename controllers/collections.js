@@ -58,11 +58,14 @@ class CollectionController {
 
     async getPopular(req, res) {
         try {
-            const comments = await Comment.findAndCountAll({ limit: 10, include: Item })
-            if (!comments) {
-                return res.status(500).json({ message: 'Comments didn`t find' })
+            const items = await Item.findAll()
+            const comments = await Comment.findAll({ where: { itemId: items.map(i => i.id) } })
+            const it = await Item.findAll({ where: { id: comments.map(c => c.itemId) } })
+            const collections = await Collection.findAll({ where: { id: it.map(i => i.collectionId) } })
+            if (!collections) {
+                return res.status(500).json({ message: 'Collections not find' })
             }
-            return res.status(200).json({ successful: true, comments })
+            return res.status(200).json({ successful: true, collections })
         } catch (error) {
             return res.status(500).json(error)
         }
