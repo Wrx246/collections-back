@@ -9,7 +9,7 @@ routerItem.get('/collection/item/:id', itemController.getItem)
 routerItem.get('/latest', itemController.getLatestItems)
 routerItem.put('/addLike', itemController.addLike)
 routerItem.put('/removeLike', itemController.removeLike)
-routerItem.put('/delete', itemController.deleteItem)
+routerItem.delete('/delete', itemController.deleteItem)
 routerItem.get('/', itemController.searchItem)
 
 module.exports = routerItem
