@@ -28,7 +28,7 @@ class ItemController {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
             await item.update({ title: title }, { where: { id: id } })
-            res.status(200).json({ successful: true, item})
+            res.status(200).json({ successful: true, item })
         } catch (error) {
             return res.status(500).json(error)
         }
@@ -51,7 +51,7 @@ class ItemController {
         const { id, collectionId } = req.body
         try {
             if (!id && !collectionId) {
-                return res.status(400).json({ message: `Incorrect item ID. Please try again.` })
+                return res.status(400).json({ message: `Incorrect data. Please try again.` })
             }
             await Item.destroy({ where: { id: id } })
             await Comment.destroy({ where: { itemId: null } })
