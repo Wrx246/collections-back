@@ -15,6 +15,23 @@ class CollectionController {
         }
     }
 
+    async saveImage(req, res) {
+        const { id, image } = req.body
+        try {
+            if (!id && !image) {
+                return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
+            }
+            const collection = await Collection.findOne({ where: { id: id } })
+            if (!collection) {
+                return res.status(400).json({ message: `Collection doesn't exist.` })
+            }
+            await collection.update({ image: image }, { where: { id: id } })
+            res.status(200).json({ successful: true, collection })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
     async editCollection(req, res) {
         const { title, description, theme, tags, id } = req.body;
         const options = {
