@@ -13,6 +13,7 @@ const Collection = sequelize.define('collection', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, unique: true },
     title: { type: DataTypes.STRING },
     description: { type: DataTypes.STRING },
+    image: { type: DataTypes.STRING, allowNull: true },
     tags: { type: DataTypes.ARRAY(DataTypes.STRING) },
     theme: { type: DataTypes.STRING },
 })
