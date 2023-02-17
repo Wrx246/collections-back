@@ -141,6 +141,9 @@ class ItemController {
     async searchItem(req, res) {
         const { search } = req.query
         try {
+            if(!search) {
+                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.`})
+            }
             const items = await Item.findAll({ where: { title: { [Op.iLike]: '%' + search + '%' } } })
             return res.status(200).json({ successful: true, items })
         } catch (error) {
