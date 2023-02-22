@@ -11,5 +11,7 @@ routerItem.put('/addLike', itemController.addLike)
 routerItem.put('/removeLike', itemController.removeLike)
 routerItem.delete('/delete', itemController.deleteItem)
 routerItem.get('/', itemController.searchItem)
+routerItem.get('/tags', itemController.getTags)
+routerItem.post('/tags/search', itemController.findByTag)
 
 module.exports = routerItem
