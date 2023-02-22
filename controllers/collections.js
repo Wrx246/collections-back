@@ -2,12 +2,54 @@ const { Collection, Item, Comment } = require('../models/Models')
 
 class CollectionController {
     async createCollection(req, res) {
-        const { title, description, theme, tags, userId } = req.body;
+        const {
+            userId,
+            title,
+            description,
+            image,
+            tags,
+            theme,
+            author,
+            comment,
+            additionalInfo,
+            publication,
+            foundation,
+            price,
+            reward,
+            score,
+            favorite,
+            country,
+            language,
+            shortName,
+            status,
+            terminated,
+            original,
+        } = req.body;
         try {
             if (!title && !description && !theme && !tags) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
             }
-            await Collection.create({ title, description, tags, theme, userId })
+            await Collection.create({ userId,
+                title,
+                description,
+                image,
+                tags,
+                theme,
+                author,
+                comment,
+                additionalInfo,
+                publication,
+                foundation,
+                price,
+                reward,
+                score,
+                favorite,
+                country,
+                language,
+                shortName,
+                status,
+                terminated,
+                original })
             const collection = await Collection.findOne({ where: { title: title } })
             return res.status(200).json({ successful: true, message: `Collection ${title} created.`, data: collection })
         } catch (error) {
@@ -33,12 +75,49 @@ class CollectionController {
     }
 
     async editCollection(req, res) {
-        const { title, description, theme, tags, id } = req.body;
+        const { 
+            title, 
+            description, 
+            theme, 
+            tags, 
+            image, 
+            author,
+            comment,
+            additionalInfo,
+            publication,
+            foundation,
+            price,
+            reward,
+            score,
+            favorite,
+            country,
+            language,
+            shortName,
+            status,
+            terminated,
+            original, 
+            id } = req.body;
         const options = {
             title: title,
             description: description,
             theme: theme,
-            tags: tags
+            tags: tags,
+            image: image,
+            author: author,
+            comment: comment,
+            additionalInfo: additionalInfo,
+            publication: publication,
+            foundation: foundation,
+            price: price,
+            reward: reward,
+            score: score,
+            favorite: favorite,
+            country: country,
+            language: language,
+            shortName: shortName,
+            status: status,
+            terminated: terminated,
+            original: original,
         }
         try {
             if (!title && !id && !description && !theme && !tags) {
