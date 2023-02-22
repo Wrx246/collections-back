@@ -4,12 +4,49 @@ const { Op } = require('sequelize')
 
 class ItemController {
     async createItem(req, res) {
-        const { title, tags, collectionId } = req.body;
+        const {
+            title,
+            tags,
+            author,
+            comment,
+            additionalInfo,
+            publication,
+            foundation,
+            price,
+            reward,
+            score,
+            favorite,
+            country,
+            language,
+            shortName,
+            status,
+            terminated,
+            original,
+            collectionId } = req.body;
         try {
             if (!title && !tags && !collectionId) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
             }
-            await Item.create({ title, tags, collectionId })
+            await Item.create({
+                title,
+                tags,
+                author,
+                comment,
+                additionalInfo,
+                publication,
+                foundation,
+                price,
+                reward,
+                score,
+                favorite,
+                country,
+                language,
+                shortName,
+                status,
+                terminated,
+                original,
+                collectionId
+            })
             const item = await Item.findOne({ where: { title: title, collectionId: collectionId } })
             return res.status(200).json({ successful: true, message: `Item ${title} created.`, data: item })
         } catch (error) {
@@ -18,7 +55,23 @@ class ItemController {
     }
 
     async editItem(req, res) {
-        const { title, id } = req.body;
+        const { title,
+            author,
+            comment,
+            additionalInfo,
+            publication,
+            foundation,
+            price,
+            reward,
+            score,
+            favorite,
+            country,
+            language,
+            shortName,
+            status,
+            terminated,
+            original,
+            id } = req.body;
         try {
             if (!title && !id) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
@@ -27,7 +80,24 @@ class ItemController {
             if (!item) {
                 return res.status(400).json({ message: `Item doesn't exist.` })
             }
-            await item.update({ title: title }, { where: { id: id } })
+            await item.update({
+                title: title,
+                author: author,
+                comment: comment,
+                additionalInfo: additionalInfo,
+                publication: publication,
+                foundation: foundation,
+                price: price,
+                reward: reward,
+                score: score,
+                favorite: favorite,
+                country: country,
+                language: language,
+                shortName: shortName,
+                status: status,
+                terminated: terminated,
+                original: original
+            }, { where: { id: id } })
             res.status(200).json({ successful: true, item })
         } catch (error) {
             return res.status(500).json(error)
@@ -141,8 +211,8 @@ class ItemController {
     async searchItem(req, res) {
         const { search } = req.query
         try {
-            if(!search) {
-                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.`})
+            if (!search) {
+                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.` })
             }
             const items = await Item.findAll({ where: { title: { [Op.iLike]: '%' + search + '%' } } })
             return res.status(200).json({ successful: true, items })
