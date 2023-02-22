@@ -220,6 +220,32 @@ class ItemController {
             return res.status(500).json(error)
         }
     }
+
+    async getTags(req, res) {
+        try {
+            let tags = []
+            await Collection.findAll()
+                .then(c => c.map(c => c.tags.map(t => tags.push(t))))
+                .then(() => tags = [...new Set(tags)])
+            return res.status(200).json({ successful: true, tags })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
+
+    async findByTag(req, res) {
+        const { tag } = req.body
+        try {
+            if (!tag) {
+                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.` })
+            }
+            const items = await Item.findAll()
+            .then(i => i.filter(i => i.tags.includes(tag)))
+            return res.status(200).json({ successful: true, items })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+    }
 }
 
 module.exports = new ItemController()

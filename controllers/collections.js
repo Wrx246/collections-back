@@ -29,7 +29,8 @@ class CollectionController {
             if (!title && !description && !theme && !tags) {
                 return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
             }
-            await Collection.create({ userId,
+            await Collection.create({
+                userId,
                 title,
                 description,
                 image,
@@ -49,7 +50,8 @@ class CollectionController {
                 shortName,
                 status,
                 terminated,
-                original })
+                original
+            })
             const collection = await Collection.findOne({ where: { title: title } })
             return res.status(200).json({ successful: true, message: `Collection ${title} created.`, data: collection })
         } catch (error) {
@@ -75,12 +77,12 @@ class CollectionController {
     }
 
     async editCollection(req, res) {
-        const { 
-            title, 
-            description, 
-            theme, 
-            tags, 
-            image, 
+        const {
+            title,
+            description,
+            theme,
+            tags,
+            image,
             author,
             comment,
             additionalInfo,
@@ -95,7 +97,7 @@ class CollectionController {
             shortName,
             status,
             terminated,
-            original, 
+            original,
             id } = req.body;
         const options = {
             title: title,
