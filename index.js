@@ -6,6 +6,7 @@ const routerAuth = require('./routes/auth')
 const routerCollection = require('./routes/collections')
 const routerItem = require('./routes/item')
 const routerComment = require('./routes/comment')
+const routerAdmin = require('./routes/admin')
 
 const app = express();
 const PORT = process.env.PORT || 8080
@@ -14,6 +15,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/auth', routerAuth)
+app.use('/admin', routerAdmin)
 app.use('/collection', routerCollection)
 app.use('/item', routerItem)
 app.use('/comment', routerComment)
