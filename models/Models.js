@@ -7,6 +7,8 @@ const User = sequelize.define('user', {
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
     name: { type: DataTypes.STRING, unique: true },
+    role: { type: DataTypes.STRING },
+    isActive: { type: DataTypes.BOOLEAN }
 })
 
 const Collection = sequelize.define('collection', {
@@ -31,7 +33,7 @@ const Collection = sequelize.define('collection', {
     favorite: { type: DataTypes.BOOLEAN, allowNull: true },
     status: { type: DataTypes.BOOLEAN, allowNull: true },
     original: { type: DataTypes.BOOLEAN, allowNull: true },
-}) 
+})
 
 const Item = sequelize.define('item', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, unique: true },
