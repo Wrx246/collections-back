@@ -70,6 +70,9 @@ class AuthController {
                     status: false
                 })
             }
+            if (user.isActive === false) {
+                return res.status(400).json({ message: `User ${name} banned!`, status: false })
+            }
             let compare = bcrypt.compareSync(password, user.password)
             if (!compare) {
                 return res.status(400).json({
@@ -84,6 +87,22 @@ class AuthController {
             return res.status(500).json(error)
         }
 
+    }
+
+    async checkBan(req, res) {
+        const { userId } = req.body;
+        try {
+            const user = await User.findOne({ where: { id: userId } })
+            if (!user) {
+                return res.status(400).json({
+                    message: `User is not found`,
+                    status: false
+                })
+            }
+            return res.status(200).json({ successful: true, member: user })
+        } catch (error) {
+            return res.status(500).json(error)
+        }
     }
 }
 
