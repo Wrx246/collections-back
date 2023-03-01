@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { User } = require('../models/Models')
+const ApiError = require('../exceptions/error')
 
 const generateToken = (id, email) => {
     return jwt.sign(
@@ -11,28 +12,19 @@ const generateToken = (id, email) => {
 }
 
 class AuthController {
-    async registration(req, res) {
+    async registration(req, res, next) {
         const { email, name, password } = req.body;
         try {
             if (!email || !password) {
-                return res.status(400).json({
-                    message: `Invalid email or password`,
-                    status: false
-                })
+                throw ApiError.BadRequest(`Invalid email or password`)
             }
             const candidate = await User.findOne({ where: { email } })
             if (candidate) {
-                return res.status(400).json({
-                    message: `Email already exist`,
-                    status: false
-                })
+                throw ApiError.BadRequest(`Email already exist`)
             }
             const username = await User.findOne({ where: { name } })
             if (username) {
-                return res.status(400).json({
-                    message: `Username already exist`,
-                    status: false
-                })
+                throw ApiError.BadRequest(`Username already exist`)
             }
             if (name === 'admin' && password === 'admin') {
                 const hashPassword = await bcrypt.hash(password, 5);
@@ -51,11 +43,11 @@ class AuthController {
             const member = await User.findOne({ where: { name } })
             return res.status(200).json({ member: member, token: token, message: 'Registration successful' })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async login(req, res) {
+    async login(req, res, next) {
         const { name, password } = req.body;
         try {
             if (name === 'admin' && password === 'admin') {
@@ -65,43 +57,34 @@ class AuthController {
             }
             const user = await User.findOne({ where: { name } });
             if (!user) {
-                return res.status(400).json({
-                    message: `User ${name} is not found`,
-                    status: false
-                })
+                throw ApiError.BadRequest(`User ${name} is not found`)
             }
             if (user.isActive === false) {
-                return res.status(400).json({ message: `User ${name} banned!`, status: false })
+                throw ApiError.BadRequest(`User ${name} banned`)
             }
             let compare = bcrypt.compareSync(password, user.password)
             if (!compare) {
-                return res.status(400).json({
-                    message: `Wrong password`,
-                    status: false
-                })
+                throw ApiError.BadRequest(`Wrong password`)
             }
             const token = generateToken(user.id, user.email)
             const member = await User.findOne({ where: { name } })
             return res.status(200).json({ member: member, token: token, message: 'Login successful' })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
 
     }
 
-    async checkBan(req, res) {
+    async checkBan(req, res, next) {
         const { userId } = req.body;
         try {
             const user = await User.findOne({ where: { id: userId } })
             if (!user) {
-                return res.status(400).json({
-                    message: `User is not found`,
-                    status: false
-                })
+                throw ApiError.BadRequest('User didnt find!')
             }
             return res.status(200).json({ successful: true, member: user })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 }

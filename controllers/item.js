@@ -1,9 +1,10 @@
 const { Item, Comment, User, Collection } = require('../models/Models')
 const sequelize = require('../config/db')
 const { Op } = require('sequelize')
+const ApiError = require('../exceptions/error')
 
 class ItemController {
-    async createItem(req, res) {
+    async createItem(req, res, next) {
         const {
             title,
             tags,
@@ -25,7 +26,7 @@ class ItemController {
             collectionId } = req.body;
         try {
             if (!title && !tags && !collectionId) {
-                return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
+                throw ApiError.BadRequest(`Incorrect data. Please try create again.`)
             }
             await Item.create({
                 title,
@@ -50,11 +51,11 @@ class ItemController {
             const item = await Item.findOne({ where: { title: title, collectionId: collectionId } })
             return res.status(200).json({ successful: true, message: `Item ${title} created.`, data: item })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async editItem(req, res) {
+    async editItem(req, res, next) {
         const { title,
             author,
             comment,
@@ -74,11 +75,11 @@ class ItemController {
             id } = req.body;
         try {
             if (!title && !id) {
-                return res.status(400).json({ successful: false, message: `Incorrect data. Please try create again.` })
+                throw ApiError.BadRequest(`Incorrect data. Please try create again.`)
             }
             const item = await Item.findOne({ where: { id: id } })
             if (!item) {
-                return res.status(400).json({ message: `Item doesn't exist.` })
+                throw ApiError.BadRequest(`Item doesn't exist.`)
             }
             await item.update({
                 title: title,
@@ -100,55 +101,55 @@ class ItemController {
             }, { where: { id: id } })
             res.status(200).json({ successful: true, item })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async getItems(req, res) {
+    async getItems(req, res, next) {
         const { id } = req.params;
         try {
             if (!id) {
-                return res.status(400).json({ message: `Incorrect user ID. Please try again.` })
+                throw ApiError.BadRequest(`Incorrect user ID. Please try again.`)
             }
             const items = await Item.findAll({ where: { collectionId: id } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async deleteItem(req, res) {
+    async deleteItem(req, res, next) {
         const { id, collectionId } = req.body
         try {
             if (!id && !collectionId) {
-                return res.status(400).json({ message: `Incorrect data. Please try again.` })
+                throw ApiError.BadRequest(`Incorrect data. Please try again.`)
             }
             await Item.destroy({ where: { id: id } })
             await Comment.destroy({ where: { itemId: null } })
             const items = await Item.findAll({ where: { collectionId: collectionId } })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async getItem(req, res) {
+    async getItem(req, res, next) {
         const { id } = req.params;
         try {
             if (!id) {
-                return res.status(400).json({ successful: false, message: `Incorrect user ID. Please try again.` })
+                throw ApiError.BadRequest(`Incorrect user ID. Please try again.`)
             }
             const item = await Item.findOne({ where: { id: id } })
             if (!item) {
-                return res.status(500).json({ successful: false, message: `Item doesn't exist` })
+                throw ApiError.BadRequest(`Item doesn't exist`)
             }
             return res.status(200).json({ successful: true, data: item })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async getLatestItems(req, res) {
+    async getLatestItems(req, res, next) {
         try {
             const items = await Item.findAll({
                 limit: 10,
@@ -156,72 +157,72 @@ class ItemController {
             })
             return res.status(200).json({ successful: true, data: items })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async addLike(req, res) {
+    async addLike(req, res, next) {
         const { id, userId } = req.body
         try {
             if (!id && !userId) {
-                return res.status(400).json({ message: `Wrong data. Please try again.` })
+                throw ApiError.BadRequest(`Wrong data. Please try again.`)
             }
             const user = await User.findOne({ where: { id: userId } })
             const item = await Item.findOne({ where: { id: id } })
             if (!user) {
-                return res.status(400).json({ message: `User doesn't exist.` })
+                throw ApiError.BadRequest(`User doesn't exist.`)
             } else if (!item) {
-                return res.status(400).json({ message: `Item doesn't exist.` })
+                throw ApiError.BadRequest(`Item doesn't exist.`)
             }
             const n = await item.likes.includes(userId)
             if (n) {
-                return res.status(500).json({ message: `Already liked` })
+                throw ApiError.BadRequest(`Already liked`)
             }
             await item.update({ likes: [...item.likes, userId] }, { where: { id: id } })
             return res.status(200).json({ successful: true, data: item })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async removeLike(req, res) {
+    async removeLike(req, res, next) {
         const { id, userId } = req.body
         try {
             if (!id && !userId) {
-                return res.status(400).json({ message: `Wrong data. Please try again.` })
+                throw ApiError.BadRequest(`Wrong data. Please try again.`)
             }
             const user = await User.findOne({ where: { id: userId } })
             const item = await Item.findOne({ where: { id: id } })
             if (!user) {
-                return res.status(400).json({ message: `User doesn't exist.` })
+                throw ApiError.BadRequest(`User doesn't exist.`)
             } else if (!item) {
-                return res.status(400).json({ message: `Item doesn't exist.` })
+                throw ApiError.BadRequest(`Item doesn't exist.`)
             }
             const n = await item.likes.includes(userId)
             if (!n) {
-                return res.status(500).json({ message: `User doesn't liked this item` })
+                throw ApiError.BadRequest(`User doesn't liked this item`)
             }
             await item.update({ likes: item.likes.filter(i => i !== userId) }, { where: { id: id } })
             return res.status(200).json({ successful: true, data: item })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async searchItem(req, res) {
+    async searchItem(req, res, next) {
         const { search } = req.query
         try {
             if (!search) {
-                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.` })
+                throw ApiError.BadRequest(`Please, type something. I found nothing.`)
             }
             const items = await Item.findAll({ where: { title: { [Op.iLike]: '%' + search + '%' } } })
             return res.status(200).json({ successful: true, items })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async getTags(req, res) {
+    async getTags(req, res, next) {
         try {
             let tags = []
             await Collection.findAll()
@@ -229,21 +230,21 @@ class ItemController {
                 .then(() => tags = [...new Set(tags)])
             return res.status(200).json({ successful: true, tags })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 
-    async findByTag(req, res) {
+    async findByTag(req, res, next) {
         const { tag } = req.body
         try {
             if (!tag) {
-                return res.status(400).json({ successful: false, message: `Please, type something. I found nothing.` })
+                throw ApiError.BadRequest(`Please, type something. I found nothing.`)
             }
             const items = await Item.findAll()
             .then(i => i.filter(i => i.tags.includes(tag)))
             return res.status(200).json({ successful: true, items })
         } catch (error) {
-            return res.status(500).json(error)
+            next(error)
         }
     }
 }
