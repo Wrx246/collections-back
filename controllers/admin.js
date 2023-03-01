@@ -12,7 +12,7 @@ class AdminController {
     }
 
     async getUser(req, res, next) {
-        const { userId, id } = req.params
+        const { userId, id } = req.body
         try {
             const admin = await User.findOne({ where: { id: id } })
             if (!admin) {
