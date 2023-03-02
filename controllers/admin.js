@@ -4,7 +4,8 @@ const ApiError = require('../exceptions/error')
 class AdminController {
     async getUsers(req, res, next) {
         try {
-            const users = await User.findAll({ where: { role: 'user' } })
+            const users = await User.findAll()
+                .then(u => u.filter(u => u.name !== 'admin'))
             return res.status(200).json({ successful: true, users })
         } catch (error) {
             next(error)
